@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank</title>
+    <link rel="stylesheet" href="question.css">
+    <!-- <script src="question.js"></script> -->
+</head>
+<body>
+    <header>
+        <h3>Question Paper Generator</h3>
+    </header>
+
+    <div class="qustDetails">
+        <label>Question Description: </label>
+        <select id="qstDescription">  
+            <option value="Choice any one">Choice any one</option>  
+            <option value="HTML">HTML</option>  
+            <option value="JAVASCRIPT">JAVASCRIPT</option>
+        </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>Question Type :</label>
+        <select id="typeselect">  
+            <option value="Choice any one">Choice any one</option>  
+            <option value="MCQ">MCQ</option>  
+            <option value="Blanks">Blanks</option>  
+            <option value="True/False">True/False</option>   
+        </select> <br><br>
+        <label>Total Questions :</label>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="text" name="totalQust" id="totalQust" placeholder="Ex: 10">&nbsp;&nbsp;&nbsp;&nbsp;
+        <label>Total Marks :</label>
+        <input type="text" name="totalMarks" id="totalMarks" placeholder="Ex: 50"><br><br>
+        <button type="submit" id="button" onclick="myFunction()" value="Submit"><b>Submit</b></button>
+    </div>
+    <!-- <p id="subjectName"></p> -->
+    <p id="Marks"></p>
+
+
+    <div class="qustContainer" id="qustContainer">
+        <!-- <p id="Marks"></p> -->
+    </div>
+    <script>
+
+        function myFunction(){
+            let pos=new Promise(function(success,failure){
+                let qb=new XMLHttpRequest()
+                qb.open("GET","question.json",true)
+                qb.send()
+
+                qb.onload=function(){
+                    var qust="";
+                    var typecheck= document.getElementById("typeselect");
+                    var text= typecheck.options[typecheck.selectedIndex].value;
+                    var noOfQust= document.getElementById("totalQust").value;
+                    
+                    // if(isNaN(noOfQust) || noOfQust<1 || noOfQust==null){
+                    //    alert("Input not valid") 
+                    // }
+                    var qustDesc= document.getElementById("qstDescription");
+                    var dropDown= qustDesc.options[qustDesc.selectedIndex].value;
+                    var totalMark= document.getElementById("totalMarks").value;
+                    var subName= document.getElementById("qstDescription").value;
+                    // document.getElementById("Marks").innerHTML="<h3>"+subName+" QUESTION PAPER"+"<br>"+"Total Marks: "+totalMark;
+                    // var topBar="<h3>"+subName+" QUESTION PAPER"+"<br>"+"Total Marks: "+totalMark;
+                    // var bar=document.getElementById("Marks").innerHTML=topBar;
+
+                    console.log(text);
+                    if(text=="MCQ")
+                    {
+                        let result=qb.responseText
+                    result=JSON.parse(result)
+                        console.log (text);
+                    var typeResult= result.filter((x)=>{return (x.subject==dropDown)}).filter((x,i)=>{return (x.type=="MCQ")}).filter((x,i)=>{return (i<noOfQust)})
+                    var displaySub= typeResult.map((y)=>{return (y.subject)})
+                    console.log(displaySub)
+                    document.getElementById("Marks").innerHTML="<h3>"+subName+" QUESTION PAPER"+"<br>"+"Total Marks: "+totalMark;
+                    // if(typeResult==null){
+                    //     alert("Data not Avaliable")
+                    // }
+                    console.log(typeResult);
+                    qust="";
+                    console.log(qust);
+                    let final=typeResult.forEach((element,i) => {
+                       qust+=(i+1)+'. '+element.q+'<br>'+element.opt1+'<br>'+element.opt2+'<br>'+element.opt3+'<br><br>';
+                       console.log(qust);
+                        
+                        document.getElementById("qustContainer").innerHTML=qust;
+                    });
+                    // var qustDiv=document.createElement("div");
+                    //       qustDiv.innerHTML=qust;
+                    //     var qustcontainer=document.getElementById("qustContainer");
+                    //     qustcontainer.appendChild(qustDiv);
+                    //     document.body.append(qustcontainer);
+                    }
+                    else if(text=="Blanks"){
+                        let result=qb.responseText
+                        result=JSON.parse(result)
+                        console.log(text);
+                        var typeResult1= result.filter((x)=>{return (x.subject==dropDown)}).filter((x,i)=>{return (x.type=="Blanks")}).filter((x,i)=>{return (i<noOfQust)})
+                    console.log(typeResult1);
+                    qust=""; 
+                    console.log(qust);
+                    let final=typeResult1.forEach((element,i) => {
+                       qust+=(i+1)+'. '+element.q+'<br>';
+                       console.log(qust);
+                        document.getElementById("qustContainer").innerHTML=qust;
+                        
+                    });
+                 
+
+                    }
+                    else if(text=="True/False"){
+                        let result=qb.responseText
+                    result=JSON.parse(result)
+                        console.log (text);
+                       var typeResult2= result.filter((x)=>{return (x.subject==dropDown)}).filter((x,i)=>{return (x.type=="True/False")}).filter((x,i)=>{return (i<noOfQust)})
+                    console.log(typeResult);
+                    qust="";
+                    console.log(qust);
+                    let final=typeResult2.forEach((element,i) => {
+                       qust+=(i+1)+'. '+element.q+'<br>'+element.opt1+'<br>'+element.opt2+'<br><br>';
+                        document.getElementById("qustContainer").innerHTML=qust;
+                        console.log(qust);
+                    });
+                    }
+                    else{
+                        alert("Fill the options below");
+                    }
+                   
+                    // var qustDiv=document.createElement("div");
+                    //       qustDiv.innerHTML=qust;
+                    //     var qustcontainer=document.getElementById("qustContainer");
+                    //     qustcontainer.appendChild(qustDiv);
+                    //     document.body.append(qustcontainer);
+                    
+                }
+                
+            })
+            
+        }
+        pos.then((data)=>{
+            console.log(data);
+        }).catch((error)=>{
+            console.log(error)
+        });
+        
+        
+        // function displayQuestions(typeResult)
+        // {
+        //     var qust="";
+        //             let final=typeResult.forEach((element) => {
+        //                qust+=element.q+'<br>'+element.opt1+'<br>'+element.opt2+'<br>'+element.opt3+'<br><br>';
+        //                 document.getElementById("qustContainer").innerHTML=qust;
+                        
+        //             });
+
+        // }
+        
+         
+    </script>
+</body>
+</html>
